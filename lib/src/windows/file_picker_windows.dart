@@ -292,6 +292,26 @@ class FilePickerWindows extends FilePicker {
     return filePaths;
   }
 
+  List<String> _extractSelectedFileFromOpenFileNameW(
+    OPENFILENAMEW openFileNameW,
+  ) {
+    final buffer = StringBuffer();
+    int i = 0;
+
+    // ignore: literal_only_boolean_expressions
+    while (true) {
+      final char = openFileNameW.lpstrFile.cast<Uint16>().elementAt(i).value;
+      if (char == 0) {
+        break;
+      } else {
+        buffer.writeCharCode(char);
+      }
+      i++;
+    }
+
+    return [buffer.toString()];
+  }
+
   Pointer<OPENFILENAMEW> _instantiateOpenFileNameW(_OpenSaveFileArgs args) {
     final lpstrFileBufferSize = 8192 * maximumPathLength;
     final Pointer<OPENFILENAMEW> openFileNameW = calloc<OPENFILENAMEW>();
