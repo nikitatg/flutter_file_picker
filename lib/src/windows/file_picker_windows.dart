@@ -165,7 +165,7 @@ class FilePickerWindows extends FilePicker {
     final result = getSaveFileNameW(openFileNameW);
     String? returnValue;
     if (result == 1) {
-      final filePaths = _extractSelectedFilesFromOpenFileNameW(
+      final filePaths = _extractSelectedFileFromOpenFileNameW(
         openFileNameW.ref,
       );
       returnValue = filePaths.first;
@@ -245,6 +245,26 @@ class FilePickerWindows extends FilePicker {
     }
 
     return filePaths;
+  }
+
+  List<String> _extractSelectedFileFromOpenFileNameW(
+    OPENFILENAMEW openFileNameW,
+  ) {
+    final buffer = StringBuffer();
+    int i = 0;
+
+    // ignore: literal_only_boolean_expressions
+    while (true) {
+      final char = openFileNameW.lpstrFile.cast<Uint16>().elementAt(i).value;
+      if (char == 0) {
+        break;
+      } else {
+        buffer.writeCharCode(char);
+      }
+      i++;
+    }
+
+    return [buffer.toString()];
   }
 
   Pointer<OPENFILENAMEW> _instantiateOpenFileNameW({
